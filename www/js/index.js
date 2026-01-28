@@ -1,32 +1,79 @@
 document.addEventListener('deviceready', onDeviceReady, false);
 
+var currentMedia = null;
+
 function onDeviceReady() {
     var permissions = cordova.plugins.permissions;
-    
-    // On Android 13+ (API 33), we need READ_MEDIA_AUDIO
-    // On older Android, we need READ_EXTERNAL_STORAGE
-    var permissionNeeded = permissions.READ_MEDIA_AUDIO;
-
-    // Check if we are on an older device
-    if (device.platform === 'Android' && parseInt(device.version) < 13) {
-        permissionNeeded = permissions.READ_EXTERNAL_STORAGE;
-    }
+    var permissionNeeded = (device.platform === 'Android' && parseInt(device.version) >= 13) 
+                            ? permissions.READ_MEDIA_AUDIO 
+                            : permissions.READ_EXTERNAL_STORAGE;
 
     permissions.checkPermission(permissionNeeded, function(status) {
         if (status.hasPermission) {
-            success();
+            startScanning();
         } else {
-            permissions.requestPermission(permissionNeeded, success, error);
+            permissions.requestPermission(permissionNeeded, startScanning, function() {
+                document.getElementById('status').innerText = "Permission Denied";
+            });
         }
-    }, error);
+    }, null);
+}
 
-    function success() {
-        document.getElementById('status').innerText = "Permission Granted! Ready to scan.";
-        document.getElementById('status').style.color = "green";
-    }
+function startScanning() {
+    document.getElementById('status').innerText = "Scanning Music Folder...";
+    
+    // We look specifically in the /Music folder
+    var path = cordova.file.externalRootDirectory + "Music/";
+    
+    window.resolveLocalFileSystemURL(path, function(dirEntry) {
+        var dirReader = dirEntry.createReader();
+        dirReader.readEntries(function(entries) {
+            displaySongs(entries);
+        }, function(err) {
+            document.getElementById('status').innerText = "Error reading folder";
+        });
+    }, function(err) {
+        document.getElementById('status').innerText = "Music folder not found";
+    });
+}
 
-    function error() {
-        document.getElementById('status').innerText = "Permission Denied. Please check App Settings.";
-        document.getElementById('status').style.color = "red";
+function displaySongs(entries) {
+    var list = document.getElementById('file-list');
+    list.innerHTML = ""; // Clear the "Searching..." text
+    var foundCount = 0;
+
+    entries.forEach(function(entry) {
+        if (entry.isFile && entry.name.toLowerCase().endsWith('.mp3')) {
+            foundCount++;
+            var div = document.createElement('div');
+            div.className = 'song-item';
+            div.innerHTML = `
+                <span>${entry.name}</span>
+                <button onclick="playSong('${entry.nativeURL}')">Play</button>
+            `;
+            list.appendChild(div);
+        }
+    });
+
+    if (foundCount === 0) {
+        document.getElementById('status').innerText = "No MP3s found in Music folder";
+    } else {
+        document.getElementById('status').innerText = "Found " + foundCount + " songs";
     }
+}
+
+function playSong(url) {
+    if (currentMedia) {
+        currentMedia.stop();
+        currentMedia.release();
+    }
+    
+    currentMedia = new Media(url, function() {
+        console.log("Finished playing");
+    }, function(err) {
+        alert("Error playing: " + JSON.stringify(err));
+    });
+    
+    currentMedia.play();
+    document.getElementById('status').innerText = "Now Playing...";
 }
