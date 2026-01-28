@@ -13,6 +13,7 @@
     "cordova-android": "^13.0.0",
     "cordova-plugin-android-permissions": "^1.1.5",
     "cordova-plugin-file": "^8.0.0",
-    "cordova-plugin-media": "^7.0.0"
+    "cordova-plugin-media": "^7.0.0",
+    "cordova-plugin-device": "^3.0.0"
   }
 }

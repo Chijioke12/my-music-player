@@ -13,5 +13,11 @@
 
     <platform name="android">
         <preference name="AndroidXEnabled" value="true" />
+        
+        <!-- This tells Android which permissions the app intends to use -->
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+            <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+        </config-file>
     </platform>
 </widget>

@@ -2,24 +2,31 @@ document.addEventListener('deviceready', onDeviceReady, false);
 
 function onDeviceReady() {
     var permissions = cordova.plugins.permissions;
-    var list = [
-        permissions.READ_EXTERNAL_STORAGE,
-        permissions.READ_MEDIA_AUDIO // For Android 13+
-    ];
+    
+    // On Android 13+ (API 33), we need READ_MEDIA_AUDIO
+    // On older Android, we need READ_EXTERNAL_STORAGE
+    var permissionNeeded = permissions.READ_MEDIA_AUDIO;
 
-    permissions.requestPermissions(list, function(status) {
-        if(status.hasPermission) {
-            document.getElementById('status').innerText = "Permission Granted!";
-            loadMusic();
+    // Check if we are on an older device
+    if (device.platform === 'Android' && parseInt(device.version) < 13) {
+        permissionNeeded = permissions.READ_EXTERNAL_STORAGE;
+    }
+
+    permissions.checkPermission(permissionNeeded, function(status) {
+        if (status.hasPermission) {
+            success();
         } else {
-            document.getElementById('status').innerText = "Permission Denied";
+            permissions.requestPermission(permissionNeeded, success, error);
         }
-    }, function() {
-        document.getElementById('status').innerText = "Error requesting permission";
-    });
-}
+    }, error);
 
-function loadMusic() {
-    // This is where you would use cordova-plugin-file to scan for mp3s
-    console.log("Ready to scan storage...");
+    function success() {
+        document.getElementById('status').innerText = "Permission Granted! Ready to scan.";
+        document.getElementById('status').style.color = "green";
+    }
+
+    function error() {
+        document.getElementById('status').innerText = "Permission Denied. Please check App Settings.";
+        document.getElementById('status').style.color = "red";
+    }
 }
