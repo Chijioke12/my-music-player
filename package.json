@@ -1,0 +1,18 @@
+{
+  "name": "com.yourname.musicplayer",
+  "displayName": "MyFreeMusic",
+  "version": "1.0.0",
+  "description": "Music Player",
+  "main": "index.js",
+  "keywords": [
+    "ecosystem:cordova"
+  ],
+  "author": "Chijioke",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "cordova-android": "^12.0.0",
+    "cordova-plugin-android-permissions": "^1.1.5",
+    "cordova-plugin-file": "^8.0.0",
+    "cordova-plugin-media": "^7.0.0"
+  }
+}
