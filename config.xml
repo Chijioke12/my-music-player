@@ -1,20 +1,20 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.yourname.musicplayer" version="1.0.0" xmlns="http://www.w3.org/ns/widgets">
+<widget id="com.chijioke.musicplayer" version="1.0.0" 
+    xmlns="http://www.w3.org/ns/widgets" 
+    xmlns:android="http://schemas.android.com/apk/res/android"> <!-- ADDED THIS LINE -->
     <name>MyFreeMusic</name>
-    <description>A simple music player built with GitHub Actions.</description>
-    <author email="dev@example.com" href="http://example.com">Your Name</author>
+    <description>Music Player built with GitHub</description>
+    <author email="dev@example.com" href="http://example.com">Chijioke</author>
     <content src="index.html" />
     <access origin="*" />
     
-    <!-- Crucial Plugins -->
     <plugin name="cordova-plugin-android-permissions" spec="^1.1.5" />
     <plugin name="cordova-plugin-file" spec="^8.0.0" />
     <plugin name="cordova-plugin-media" spec="^7.0.0" />
+    <plugin name="cordova-plugin-device" spec="^3.0.0" />
 
     <platform name="android">
         <preference name="AndroidXEnabled" value="true" />
-        
-        <!-- This tells Android which permissions the app intends to use -->
         <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
             <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
